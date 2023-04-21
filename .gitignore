@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Ignorar carpeta node_modules/ generada por npm
+node_modules/
