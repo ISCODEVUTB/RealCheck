@@ -1,0 +1,38 @@
+name: Lanzar 🚀
+
+on:
+  push:
+    branches:
+      - main
+      - RC-5-Implementaci-n-CI-CD-para-el-servicio-base
+
+env:
+  AZURE_WEBAPP_NAME: realcheckc
+  AZURE_WEBAPP_PACKAGE_PATH: ./client/build
+  AZURE_WEBAPP_NODE_VERSION: 16.x
+  AZURE_PUBLISH_PROFILE: <publishData><publishProfile profileName="realcheckc - Web Deploy" publishMethod="MSDeploy" publishUrl="realcheckc.scm.azurewebsites.net:443" msdeploySite="realcheckc" userName="$realcheckc" userPWD="ycA1mjwwnpXptgenEMC7wCm1z6uhHYHG1PbmLp6Gbm1SK7GRcKK5QyCa7mL5" destinationAppUrl="https://realcheckc.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="http://windows.azure.com" webSystem="WebSites"><databases /></publishProfile><publishProfile profileName="realcheckc - FTP" publishMethod="FTP" publishUrl="ftps://waws-prod-blu-271.ftp.azurewebsites.windows.net/site/wwwroot" ftpPassiveMode="True" userName="realcheckc\$realcheckc" userPWD="ycA1mjwwnpXptgenEMC7wCm1z6uhHYHG1PbmLp6Gbm1SK7GRcKK5QyCa7mL5" destinationAppUrl="https://realcheckc.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="http://windows.azure.com" webSystem="WebSites"><databases /></publishProfile><publishProfile profileName="realcheckc - Zip Deploy" publishMethod="ZipDeploy" publishUrl="realcheckc.scm.azurewebsites.net:443" userName="$realcheckc" userPWD="ycA1mjwwnpXptgenEMC7wCm1z6uhHYHG1PbmLp6Gbm1SK7GRcKK5QyCa7mL5" destinationAppUrl="https://realcheckc.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="http://windows.azure.com" webSystem="WebSites"><databases /></publishProfile></publishData>
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Use Node.js version ${{ env.AZURE_WEBAPP_NODE_VERSION }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.AZURE_WEBAPP_NODE_VERSION }}
+          
+      - name: Install dependencies
+        run: cd client && npm ci
+      
+      - name: Build the React app
+        run: cd client && npm run build
+        
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ env.AZURE_PUBLISH_PROFILE }}
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
