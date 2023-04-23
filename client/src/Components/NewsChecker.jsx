@@ -31,7 +31,7 @@ function NewsChecker() {
             onChange={handleInputChange}
           />
           <button className="submit-button" type="submit">
-            Comprobar
+            Verificar
           </button>
         </div>
       </form>
