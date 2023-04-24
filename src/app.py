@@ -15,6 +15,10 @@ real_vectorizer = joblib.load('./utils/real_vectorizer.joblib')
 # Cargar el modelo de spaCy
 nlp = spacy.load('es_dep_news_trf')
 
+@app.route('/')
+def welcome():
+    return 'ApiRealCheck!'
+
 # Definir la ruta para el endpoint de predicción
 @app.route('/verificar', methods=['POST'])
 def predict_sentiment():
