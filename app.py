@@ -29,4 +29,4 @@ def predict_sentiment():
     return jsonify({'text': texto, 'verificabilidad': int(result[1]), 'probabilidad': result[2]})
     
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True, use_reloader=False)
