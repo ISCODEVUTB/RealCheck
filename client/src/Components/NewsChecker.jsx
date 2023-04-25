@@ -11,7 +11,7 @@ function NewsChecker() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    fetch("http://localhost:5000/verificar", {
+    fetch("http://172.190.53.35:5000/verificar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ texto: inputText }),

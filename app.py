@@ -17,7 +17,7 @@ nlp = spacy.load('es_dep_news_trf')
 
 @app.route('/')
 def welcome():
-    return 'ApiRealCheck!'
+    return 'Welcome to ApiRealCheck!'
 
 # Definir la ruta para el endpoint de predicción
 @app.route('/verificar', methods=['POST'])
