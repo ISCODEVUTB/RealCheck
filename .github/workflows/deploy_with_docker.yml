@@ -38,4 +38,4 @@ jobs:
         ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
    
     - name: Connect and exit
-      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "pwd && ls -la && sudo docker rm -f realcheck && sudo docker run -d --name realcheck --pull always -p 3000:3000 -p 5000:5000 anpiz/realcheck && exit"
+      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "pwd && ls -la && sudo docker rm -f realcheck && sudo docker image prune -af && sudo docker run -d --name realcheck --pull always -p 3000:3000 -p 5000:5000 anpiz/realcheck && exit"
