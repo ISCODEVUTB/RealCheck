@@ -4,6 +4,8 @@ import "./NewsChecker.css";
 function NewsChecker() {
   const [inputText, setInputText] = useState("");
   const [resultText, setResultText] = useState("");
+  const [veri, setVeri] = useState(0);
+  const [showResult, setShowResult] = useState(false);
 
   const handleInputChange = (event) => {
     setInputText(event.target.value);
@@ -17,7 +19,19 @@ function NewsChecker() {
       body: JSON.stringify({ texto: inputText }),
     })
       .then((response) => response.json())
-      .then((data) => setResultText(`Verificabilidad: ${data.verificabilidad}, Probabilidad: ${data.probabilidad}`));
+      .then((data) => {
+        let message;
+        if (data.verificabilidad === 0) {
+          message = `La oración no se puede verificar con una probabilidad del ${(data.probabilidad[0]*100).toFixed(2)}%.`;
+        } else if (data.verificabilidad === 1) {
+          message = `La oración que ingresaste se puede verificar con una probabilidad del ${(data.probabilidad[1]*100).toFixed(2)}%.`;
+        } else {
+          message = `Verificabilidad: ${data.verificabilidad}, Probabilidad: ${data.probabilidad}`;
+        }
+        setResultText(message);
+        setVeri(data.verificabilidad);
+        setShowResult(true);
+      });
   };
 
   return (
@@ -35,7 +49,11 @@ function NewsChecker() {
           </button>
         </div>
       </form>
-      <p>{resultText}</p>
+      <div className={showResult ? "result-container" : ""}>
+        <p className={`result-text${veri === 0 ? " no" : ""}`}>
+          {resultText}
+        </p>
+      </div>
     </div>
   );
 }
