@@ -22,9 +22,9 @@ function NewsChecker() {
       .then((data) => {
         let message;
         if (data.verificabilidad === 0) {
-          message = `La oración no se puede verificar con una probabilidad del ${(data.probabilidad[0]*100).toFixed(2)}%.`;
+          message = `Hay una probabilidad del ${(data.probabilidad[0]*100).toFixed(2)}% de que el texto que ingresaste sea un comentario.`;
         } else if (data.verificabilidad === 1) {
-          message = `La oración que ingresaste se puede verificar con una probabilidad del ${(data.probabilidad[1]*100).toFixed(2)}%.`;
+          message = `Hay una probabilidad del ${(data.probabilidad[1]*100).toFixed(2)}% de que el texto que ingresaste sea un titular de noticia.`;
         } else {
           message = `Verificabilidad: ${data.verificabilidad}, Probabilidad: ${data.probabilidad}`;
         }
