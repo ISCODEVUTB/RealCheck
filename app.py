@@ -6,7 +6,7 @@ from validacion import Validar
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, origins=["*"])
+CORS(app, origins=["172.190.53.35"])
 
 # Cargar el modelo y el vectorizador
 clf = joblib.load('./utils/clf.joblib')
@@ -17,7 +17,7 @@ nlp = spacy.load('es_dep_news_trf')
 
 @app.route('/')
 def welcome():
-    return 'Welcome to ApiRealCheck!'
+    return 'Welcome to the RealCheck API!'
 
 # Definir la ruta para el endpoint de predicción
 @app.route('/verificar', methods=['POST'])
