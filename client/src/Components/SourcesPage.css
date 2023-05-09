@@ -1,0 +1,110 @@
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    overflow-y: scroll;
+    height: auto;
+    max-height: 400px; /* ajustar la altura del contenedor */
+    margin-bottom: 30px;
+  }
+  
+  .card {
+    display: flex;
+    flex-direction: row;
+    width: 60%;
+    margin: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    
+  }
+  
+  .column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 10px;
+  }
+
+  .column-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 10px;
+    width: -webkit-fill-available;
+  }
+    
+  .id {
+    padding: 0;
+    margin: 0;
+    border-radius: 10px 0px 0px 10px;
+    width: 50px;
+    height: 100%;
+    background-color: #2d9cdb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .verifying {
+    font-style: italic;
+    color: gray;
+    height: 100%;
+    width: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-left: 1px solid gray;
+    padding: 0 0.5rem;
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: left;
+    color: #333;
+    text-decoration: none;
+  }
+
+  .title:hover {
+    color: #666;
+  }
+
+  .description {
+    font-size: 14px;
+    color: #8c8c8c;
+  }
+
+  .cont-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0px;
+    padding: 0px;
+    text-align: center;
+  }
+  
+  .cont-subtitle {
+    font-size: 18px;
+    margin: 0px 0px 20px 0px;
+    padding: 0px;
+    text-align: center;
+  }
+
+
+  .card-container::-webkit-scrollbar {
+    width: 10px; /* ancho del scroll bar */
+  }
+  
+  .card-container::-webkit-scrollbar-track {
+    background: #f1f1f1; /* color de fondo del track */
+  }
+  
+  .card-container::-webkit-scrollbar-thumb {
+    background-color: #888; /* color de la thumb */
+    border-radius: 5px; /* radio de la thumb */
+    border: 2px solid #f1f1f1; /* borde de la thumb */
+  }

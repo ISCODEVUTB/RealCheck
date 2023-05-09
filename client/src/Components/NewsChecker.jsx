@@ -1,11 +1,16 @@
 import React, { useState } from "react";
 import "./NewsChecker.css";
+import { useNavigate } from "react-router-dom";
 
 function NewsChecker() {
+  const navigate = useNavigate();
   const [inputText, setInputText] = useState("");
   const [resultText, setResultText] = useState("");
   const [veri, setVeri] = useState(0);
   const [showResult, setShowResult] = useState(false);
+  const [showButton, setShowButton] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [dotsCount, setDotsCount] = useState(0);
 
   const handleInputChange = (event) => {
     setInputText(event.target.value);
@@ -25,6 +30,7 @@ function NewsChecker() {
           message = `Hay una probabilidad del ${(data.probabilidad[0]*100).toFixed(2)}% de que el texto que ingresaste sea un comentario.`;
         } else if (data.verificabilidad === 1) {
           message = `Hay una probabilidad del ${(data.probabilidad[1]*100).toFixed(2)}% de que el texto que ingresaste sea un titular de noticia.`;
+          setShowButton(true); // Mostrar el botón "Buscar fuentes"
         } else {
           message = `Verificabilidad: ${data.verificabilidad}, Probabilidad: ${data.probabilidad}`;
         }
@@ -34,6 +40,33 @@ function NewsChecker() {
       });
   };
 
+  const handleSearchClick = (text) => {
+    setIsLoading(true); // Establecer isLoading como true
+    setDotsCount(0); // Inicializar el contador de puntos a cero
+    const intervalId = setInterval(() => {
+      // Actualizar el contador de puntos
+      setDotsCount((count) => (count + 1) % 4);
+    }, 500);
+    fetch("http://172.190.53.35:5000/search", { 
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ texto: text }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        clearInterval(intervalId); // Limpiar el intervalo cuando la búsqueda se completa
+        setIsLoading(false); // Establecer isLoading como false
+        console.log(data);
+        console.log("Sources: ", data.sources)
+        console.log("Preprocesado:", data.preprocesado)
+        const state = {
+          sources: data.sources,
+          preprocesado: data.preprocesado
+        };
+        navigate('/sources', { state });
+      });
+  };
+  
   return (
     <div className="container">
       <form onSubmit={handleSubmit}>
@@ -53,6 +86,13 @@ function NewsChecker() {
         <p className={`result-text${veri === 0 ? " no" : ""}`}>
           {resultText}
         </p>
+        <div className="button-container">
+          {showButton && (
+            <button className="button-sources" onClick={() => handleSearchClick(inputText)} disabled={isLoading}>
+              {isLoading ? `Cargando${'.'.repeat(dotsCount)}` : "Buscar fuentes"}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

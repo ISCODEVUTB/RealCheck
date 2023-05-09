@@ -71,3 +71,21 @@
     margin-top: 10px;
     color: red;
   }
+
+  .button-container {
+    text-align: center;
+  }
+  
+  .button-sources {
+    background-color: #4CAF50; /* Color de fondo */
+    border: none; /* Sin borde */
+    color: white; /* Texto en color blanco */
+    padding: 12px 24px; /* Espacio interior del botón */
+    text-align: center; /* Alineación de texto centrada */
+    text-decoration: none; /* Sin decoración de texto */
+    display: inline-block; /* Mostrar como un elemento en línea */
+    font-size: 16px; /* Tamaño de fuente */
+    border-radius: 4px; /* Borde redondeado */
+    cursor: pointer; /* Cambia el cursor al pasar el mouse por encima */
+    margin-top: 10px; /* Margen superior de 10px */
+  }
