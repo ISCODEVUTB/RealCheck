@@ -10,12 +10,13 @@
     "concurrently": "^8.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.11.1",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "predeploy": "npm run build",
-    "comm_start":"react-scripts start",
+    "comm_start": "react-scripts start",
     "deploy": "gh-pages -d build",
     "start": "npm run dev",
     "build": "react-scripts build",
