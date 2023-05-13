@@ -31,6 +31,9 @@
   }
   
   .submit-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: #2d9cdb;
     color: white;
     padding: 0.5rem 1rem;
@@ -39,6 +42,8 @@
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.2s;
+    width: 6rem;
+    height: 34px;
   }
   
   .submit-button:hover {
@@ -80,7 +85,6 @@
     background-color: #4CAF50; /* Color de fondo */
     border: none; /* Sin borde */
     color: white; /* Texto en color blanco */
-    padding: 12px 24px; /* Espacio interior del botón */
     text-align: center; /* Alineación de texto centrada */
     text-decoration: none; /* Sin decoración de texto */
     display: inline-block; /* Mostrar como un elemento en línea */
@@ -88,4 +92,6 @@
     border-radius: 4px; /* Borde redondeado */
     cursor: pointer; /* Cambia el cursor al pasar el mouse por encima */
     margin-top: 10px; /* Margen superior de 10px */
+    width: 150px;
+    height: 40px;
   }

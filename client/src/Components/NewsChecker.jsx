@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./NewsChecker.css";
 import { useNavigate } from "react-router-dom";
+import { Loader1, Loader2 } from "./Loaders.jsx";
 
 function NewsChecker() {
   const navigate = useNavigate();
@@ -10,13 +11,14 @@ function NewsChecker() {
   const [showResult, setShowResult] = useState(false);
   const [showButton, setShowButton] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [dotsCount, setDotsCount] = useState(0);
+  const [isLoadingVer, setIsLoadingVer] = useState(false);
 
   const handleInputChange = (event) => {
     setInputText(event.target.value);
   };
 
   const handleSubmit = (event) => {
+    setIsLoadingVer(true);
     event.preventDefault();
     fetch("http://172.190.53.35:5000/verificar", {
       method: "POST",
@@ -25,6 +27,7 @@ function NewsChecker() {
     })
       .then((response) => response.json())
       .then((data) => {
+        setIsLoadingVer(false);
         let message;
         if (data.verificabilidad === 0) {
           message = `Hay una probabilidad del ${(data.probabilidad[0]*100).toFixed(2)}% de que el texto que ingresaste sea un comentario.`;
@@ -42,11 +45,6 @@ function NewsChecker() {
 
   const handleSearchClick = (text) => {
     setIsLoading(true); // Establecer isLoading como true
-    setDotsCount(0); // Inicializar el contador de puntos a cero
-    const intervalId = setInterval(() => {
-      // Actualizar el contador de puntos
-      setDotsCount((count) => (count + 1) % 4);
-    }, 500);
     fetch("http://172.190.53.35:5000/search", { 
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -54,7 +52,6 @@ function NewsChecker() {
     })
       .then((response) => response.json())
       .then((data) => {
-        clearInterval(intervalId); // Limpiar el intervalo cuando la búsqueda se completa
         setIsLoading(false); // Establecer isLoading como false
         console.log("Texto: ", text)
         console.log("Sources: ", data.sources)
@@ -73,13 +70,17 @@ function NewsChecker() {
       <form onSubmit={handleSubmit}>
         <div className="input-wrapper">
           <input
+            id="input-field"
             className="input-field"
             type="text"
             value={inputText}
             onChange={handleInputChange}
-          />
+            title="Ingrese el título de la noticia que desea verificar"
+            placeholder="Título de la noticia"
+            autoComplete="off"
+          ></input>
           <button className="submit-button" type="submit">
-            Verificar
+          {isLoadingVer ? <Loader1 /> : "Verificar"}
           </button>
         </div>
       </form>
@@ -90,7 +91,7 @@ function NewsChecker() {
         <div className="button-container">
           {showButton && (
             <button className="button-sources" onClick={() => handleSearchClick(inputText)} disabled={isLoading}>
-              {isLoading ? `Cargando${'.'.repeat(dotsCount)}` : "Buscar fuentes"}
+              {isLoading ? <Loader2 /> : "Buscar fuentes"}
             </button>
           )}
         </div>
