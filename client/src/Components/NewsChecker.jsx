@@ -56,10 +56,11 @@ function NewsChecker() {
       .then((data) => {
         clearInterval(intervalId); // Limpiar el intervalo cuando la búsqueda se completa
         setIsLoading(false); // Establecer isLoading como false
-        console.log(data);
+        console.log("Texto: ", text)
         console.log("Sources: ", data.sources)
         console.log("Preprocesado:", data.preprocesado)
         const state = {
+          texto: text,
           sources: data.sources,
           preprocesado: data.preprocesado
         };
