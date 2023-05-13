@@ -8,8 +8,7 @@ from search_sources import get_sources
 from match import similarity
 
 app = Flask(__name__)
-app.config['CORS_HEADERS'] = 'Content-Type'
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Cargar el modelo y el vectorizador
 clf = joblib.load('./utils/clf.joblib')
@@ -48,6 +47,7 @@ def search_sources():
     
 @app.route('/check', methods=['POST'])
 def check_similarity():
+    #print("REQUEST_URL: ",request.url)
     texto = request.get_json()['texto']
     titulares = request.get_json()['titulares']
     #print("Texto: ",texto)
@@ -59,4 +59,4 @@ def check_similarity():
     return jsonify({'titulares_seleccionados': titulares_seleccionados, 'probabilidades': probabilidades})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, use_reloader=False) 
+    app.run(host='0.0.0.0', debug=True, use_reloader=True) 
