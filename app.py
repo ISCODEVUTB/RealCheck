@@ -6,6 +6,7 @@ from validacion import Validar
 from flask_cors import CORS
 from search_sources import get_sources
 from match import similarity
+import numpy as np
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -56,7 +57,10 @@ def check_similarity():
     if not request.referrer.startswith('http://172.190.53.35:3000'): 
         return jsonify({'error': 'Acceso denegado'})
     titulares_seleccionados, probabilidades = similarity(texto, titulares)
+    probabilidades =  np.array(probabilidades, dtype=np.float32).tolist()
+    #print("Respuesta 1: ", titulares_seleccionados)
+    #print("Respuesta 2: ", probabilidades)
     return jsonify({'titulares_seleccionados': titulares_seleccionados, 'probabilidades': probabilidades})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, use_reloader=True) 
+    app.run(host='0.0.0.0', debug=True, use_reloader=False) 
