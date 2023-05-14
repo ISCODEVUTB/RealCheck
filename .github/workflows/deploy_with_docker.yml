@@ -7,11 +7,11 @@ on:
     branches: [ "main" ]
 
 jobs:
-
-  build:
-
+  deployment:
     runs-on: ubuntu-latest
-
+    environment: 
+      name: 'production'
+      url: 'http://172.190.53.35:3000/'
     steps:
     - uses: actions/checkout@v3
     
