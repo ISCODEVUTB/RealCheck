@@ -2,6 +2,7 @@ import './App.css';
 import NewsChecker from './Components/NewsChecker';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SourcesPage from './Components/SourcesPage';
+import Demo from './Components/Demo';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Routes>
           <Route exact path="/" element={<NewsChecker />} />
           <Route path="/sources" element={<SourcesPage />} />
+          <Route path="/demo" element={<Demo />} />
         </Routes>
       </div>
     </BrowserRouter>
