@@ -3,18 +3,13 @@ import { useLocation } from "react-router-dom";
 import "./SourcesPage.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { Loader2, Loader3 } from "./Loaders";
-import { useNavigate } from "react-router-dom";
-
+import { Loader3 } from "./Loaders";
 
 function SourcesPage() {
-  const navigate = useNavigate();
   const { state } = useLocation();
   const [probabilities, setProbabilities] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [hasFetchedData, setHasFetchedData] = useState(false);
-  const [isLoadingVer, setIsLoadingVer] = useState(false);
-  const titularesSeleccionados = [];
 
   useEffect(() => {
     if (!hasFetchedData) {
@@ -32,7 +27,7 @@ function SourcesPage() {
 
         try {
           setIsLoading(true);
-          console.log("Se hace petición: ", hasFetchedData);
+          console.log("Se hace peti: ", hasFetchedData);
           const response = await fetch(
             "http://172.190.53.35:5000/check",
             requestOptions
@@ -54,43 +49,6 @@ function SourcesPage() {
     return <Loader3 />;
   }
 
-  const handleLLMClick = async (text) => {
-    setIsLoadingVer(true); // Establecer isLoading como true
-    console.log("Analizar...");
-    console.log("Fuentes escogidas: ", titularesSeleccionados);
-    
-    try {
-      const response = await fetch("http://172.190.53.35:5000/check_llm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texto: text, fuentes_escogidas: titularesSeleccionados }),
-      });
-    
-      const data = await response.json();
-    
-      setIsLoadingVer(false); // Establecer isLoading como false
-      console.log("Texto: ", text);
-      console.log("Respuesta: ", data.res);
-      console.log("Razón:", data.reason);
-      console.log("Fuentes analizada 1: ", data.fuentes[0].title)
-      console.log("Fuentes analizada 2: ", data.fuentes[1].title)
-      
-      const state = {
-        texto: text,
-        respuesta: data.res,
-        reason: data.reason,
-        fuentes: data.fuentes,
-      };
-    
-      navigate("/demo", { state });
-    } catch (error) {
-      console.error("Error:", error);
-      // Manejar el error de alguna manera
-      setIsLoadingVer(false); // Establecer isLoading como false en caso de error
-    }
-  };
-  
-
   // Renderizar el contenido normalmente si isLoading es falso
   const sourcesList = state.sources.map((source) => {
     let is_selected = false;
@@ -102,7 +60,6 @@ function SourcesPage() {
     ) {
       status = "Seleccionado";
       is_selected = true;
-      titularesSeleccionados.push(source);
     }
     return (
       <div className={"card"} key={source._id}>
@@ -134,17 +91,10 @@ function SourcesPage() {
   });
 
   return (
-    <div className="contenedor_sources">
+    <div>
       <h2 className="cont-title">Fuentes encontradas</h2>
-      <button
-          className="button-sources"
-          onClick={() => handleLLMClick(state.texto)}
-          disabled={isLoadingVer}
-        >
-          {isLoadingVer ? <Loader2 /> : "Verificar con LLM"}
-        </button>
       <p className="cont-subtitle">
-        Noticia preprocesada: {state.preprocesado.join(", ")}
+        Texto preprocesado: {state.preprocesado.join(", ")}
       </p>
       <div className="card-container">{sourcesList}</div>
     </div>

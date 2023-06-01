@@ -14,9 +14,9 @@ def similarity(text, titulares):
         prob = cosine_similarity(frase_vec.reshape(1, -1), titular_vec.reshape(1, -1))[0][0]
         titulares_prob.append((titular, prob))
 
-    # Seleccionar los titulares con las 2 probabilidades más altas
+    # Seleccionar los titulares con las diez probabilidades más altas
     titulares_prob.sort(key=lambda x: x[1], reverse=True)
-    titulares_prob = titulares_prob[1:3]
+    titulares_prob = titulares_prob[:10]
 
     # Guardar los titulares seleccionados y sus probabilidades en listas
     titulares_seleccionados = []

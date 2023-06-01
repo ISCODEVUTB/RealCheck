@@ -17,68 +17,80 @@ function NewsChecker() {
     setInputText(event.target.value);
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     setIsLoadingVer(true);
     event.preventDefault();
-    try {
-      const response = await fetch("http://172.190.53.35:5000/verificar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texto: inputText }),
+    fetch("http://localhost:5000/verificar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ texto: inputText }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setIsLoadingVer(false);
+        let message;
+        if (data.verificabilidad === 0) {
+          message = `Hay una probabilidad del ${(
+            data.probabilidad[0] * 100
+          ).toFixed(2)}% de que el texto que ingresaste sea un comentario.`;
+        } else if (data.verificabilidad === 1) {
+          message = `Hay una probabilidad del ${(
+            data.probabilidad[1] * 100
+          ).toFixed(
+            2
+          )}% de que el texto que ingresaste sea un titular de noticia.`;
+          setShowButton(true); // Mostrar el botón "Buscar fuentes"
+        } else {
+          message = `Verificabilidad: ${data.verificabilidad}, Probabilidad: ${data.probabilidad}`;
+        }
+        setResultText(message);
+        setVeri(data.verificabilidad);
+        setShowResult(true);
       });
-      const data = await response.json();
-
-      setIsLoadingVer(false);
-      let message;
-      if (data.verificabilidad === 0) {
-        message = `Hay una probabilidad del ${(
-          data.probabilidad[0] * 100
-        ).toFixed(2)}% de que el texto que ingresaste sea un comentario.`;
-      } else if (data.verificabilidad === 1) {
-        message = `Hay una probabilidad del ${(
-          data.probabilidad[1] * 100
-        ).toFixed(
-          2
-        )}% de que el texto que ingresaste sea un titular de noticia.`;
-        setShowButton(true); // Mostrar el botón "Buscar fuentes"
-      } else {
-        message = `Verificabilidad: ${data.verificabilidad}, Probabilidad: ${data.probabilidad}`;
-      }
-      setResultText(message);
-      setVeri(data.verificabilidad);
-      setShowResult(true);
-    } catch (error) {
-      console.error("Error:", error);
-      // Manejar el error de alguna manera
-      setIsLoadingVer(false); // Establecer isLoading como false en caso de error
-    }
   };
 
-  const handleSearchClick = async (text) => {
+  const handleSearchClick = (text) => {
     setIsLoading(true); // Establecer isLoading como true
-    try {
-      const response = await fetch("http://172.190.53.35:5000/search", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texto: text }),
+    fetch("http://172.190.53.35:5000/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ texto: text }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setIsLoading(false); // Establecer isLoading como false
+        console.log("Texto: ", text);
+        console.log("Sources: ", data.sources);
+        console.log("Preprocesado:", data.preprocesado);
+        const state = {
+          texto: text,
+          sources: data.sources,
+          preprocesado: data.preprocesado,
+        };
+        navigate("/sources", { state });
       });
-      const data = await response.json();
+  };
 
-      setIsLoading(false); // Establecer isLoading como false
-      console.log("Texto: ", text);
-      console.log("Sources: ", data.sources);
-      console.log("Preprocesado:", data.preprocesado);
-      const state = {
-        texto: text,
-        sources: data.sources,
-        preprocesado: data.preprocesado,
-      };
-      navigate("/sources", { state });
-    } catch (error) {
-      console.error("Error:", error);
-      // Manejar el error de alguna manera
-      setIsLoading(false); // Establecer isLoading como false en caso de error
-    }
+  const handleLLMClick = (text) => {
+    setIsLoading(true); // Establecer isLoading como true
+    fetch("http://localhost:5000/check_llm", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ texto: text }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setIsLoading(false); // Establecer isLoading como false
+        console.log("Texto: ", text);
+        console.log("Respuesta: ", data.res);
+        console.log("Razón:", data.reason);
+        const state = {
+          texto: text,
+          respuesta: data.res,
+          reason: data.reason,
+        };
+        navigate("/demo", { state });
+      });
   };
 
   return (
@@ -111,6 +123,13 @@ function NewsChecker() {
                 disabled={isLoading}
               >
                 {isLoading ? <Loader2 /> : "Buscar fuentes"}
+              </button>
+              <button
+                className="button-sources"
+                onClick={() => handleLLMClick(inputText)}
+                disabled={isLoading}
+              >
+                {isLoading ? <Loader2 /> : "Verificar con LLM"}
               </button>
             </>
           )}
