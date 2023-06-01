@@ -64,6 +64,14 @@ function Demo() {
               <p key={index}>{line}</p>
             ))}
           </div>
+          <div>
+            <strong>Fuentes analizadas:</strong>
+            {state.fuentes.map((fuente, index) => (
+              <p key={index}>
+                - <a className="title" href={fuente.source}>{fuente.title}</a>
+              </p>
+            ))}
+          </div>
         </div>
       </div>
     </div>

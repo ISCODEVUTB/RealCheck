@@ -4,7 +4,7 @@ import spacy
 from preprocesamiento import Tokenizar
 from validacion import Validar
 from flask_cors import CORS
-from search_sources import get_sources
+from search_sources import get_sources, extract_paragraphs
 from match import similarity
 import numpy as np
 import requests
@@ -65,26 +65,39 @@ def check_similarity():
 @app.route('/check_llm', methods=['POST'])
 def news_checker():
     texto = request.get_json()['texto']
-    fuente1 = request.get_json()['fuente1']
-    fuente2 = request.get_json()['fuente2']
-    print("Texto: ",texto)
+    fuentes = request.get_json()['fuentes_escogidas']
+    #print(texto)
+    #print("fuentes: ", fuentes)
+    descrips = []
+    for f in fuentes:
+        #print("f: ", f)
+        descrips.append(extract_paragraphs(f["source"]))
+    fuente1 = descrips[0]
+    fuente2 = descrips[1]
+
+    #print("Texto: ",texto)
     # Restringir el uso del backend a solo nuestro frontend
     #if not request.referrer.startswith('http://172.190.53.35:3000'): 
     #    return jsonify({'error': 'Acceso denegado'})
     # Proximamente: Mejora de algoritmo de verificación con LLM
     #res , reason = verificar_llm(texto)
     #return jsonify({'res': res, 'reason': reason})
-    # Definir la URL del endpoint al que deseas hacer la petición
-    url = 'http://52.188.17.107:5000/analizar_llm'
-    # Crear los datos en formato JSON que se enviarán en la solicitud POST
-    data = {
-        'texto': texto,
-        'fuente1': fuente1,
-        'fuente2': fuente2
-    }
-    # Realizar la solicitud POST al endpoint
-    response = requests.post(url, json=data)
-    return response
+    
+    try:
+        # Validación con LLM
+        url = 'http://172.190.53.35:7000/analizar_llm'
+        data = {
+            'texto': texto,
+            'fuente1': fuente1,
+            'fuente2': fuente2
+        }
+
+        response = requests.post(url, json=data)
+        res = response.json()
+        print(res)
+        return jsonify({'res': res['validacion'], 'reason': res['razon'], 'fuentes': fuentes})
+    except:
+        return jsonify({'res': 'No se puede validar con LLM en este momento', 'reason': 'No se pudo hacer la consulta desde el servidor, intente más tarde o contacte con un administrador', 'fuentes': fuentes})
 
 # Obtener la respuesta en formato JSON
 
