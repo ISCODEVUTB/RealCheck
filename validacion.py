@@ -1,4 +1,4 @@
-from preprocesamiento import tokenizar
+from preprocesamiento import Tokenizar
 
 def validar(clf, real_vectorizer, frase: str):
     frase_x = real_vectorizer.transform([frase])
