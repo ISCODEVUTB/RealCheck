@@ -4,6 +4,7 @@ from gpt_scrap import verificar
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
+app.config['CSRF_ENABLED'] = False
 
 @app.route('/')
 def welcome():

@@ -12,6 +12,7 @@ import requests
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
+app.config['CSRF_ENABLED'] = False
 
 # Cargar el modelo y el vectorizador
 clf = joblib.load('./utils/clf.joblib')

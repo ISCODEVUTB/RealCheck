@@ -3,10 +3,14 @@ import { useLocation } from "react-router-dom";
 import { Loader3 } from "./Loaders";
 import "./Demo.css";
 
+function generateUniqueKey(prefix, index) {
+  return `${prefix}${index + 1}`;
+}
+
 function Demo() {
   const { state } = useLocation();
   const [isLoading, setIsLoading] = useState(true);
-  
+
   useEffect(() => {
     // Simulación de una llamada asíncrona para obtener los datos
     setTimeout(() => {
@@ -64,13 +68,13 @@ function Demo() {
           <div>
             <strong>Validación con LLM:</strong>
             {state.reason.split("\n").map((line, index) => (
-              <p key={index}>{line}</p>
+              <p key={generateUniqueKey("line", index)}>{line}</p>
             ))}
           </div>
           <div>
             <strong>Fuentes analizadas:</strong>
             {state.fuentes.map((fuente, index) => (
-              <p key={index}>
+              <p key={generateUniqueKey("fuente", index)}>
                 -{" "}
                 <a className="title" href={fuente.source}>
                   {fuente.title}
