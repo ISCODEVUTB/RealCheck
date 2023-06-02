@@ -6,7 +6,7 @@ import "./Demo.css";
 function Demo() {
   const { state } = useLocation();
   const [isLoading, setIsLoading] = useState(true);
-
+  
   useEffect(() => {
     // Simulación de una llamada asíncrona para obtener los datos
     setTimeout(() => {
@@ -40,7 +40,6 @@ function Demo() {
       break;
     default:
       resultClass = "sin-informacion";
-      resultColor = "";
       break;
   }
 
@@ -55,12 +54,16 @@ function Demo() {
           <p className="resultado_state_llm">
             <strong>Resultado: &nbsp; </strong>
             <div className={`${resultClass}`} style={{ color: resultColor }}>
-              <strong>{state.respuesta ? state.respuesta : "Sin información suficiente"}</strong>
+              <strong>
+                {state.respuesta
+                  ? state.respuesta
+                  : "Sin información suficiente"}
+              </strong>
             </div>
           </p>
           <div>
             <strong>Validación con LLM:</strong>
-            {state.reason.split('\n').map((line, index) => (
+            {state.reason.split("\n").map((line, index) => (
               <p key={index}>{line}</p>
             ))}
           </div>
@@ -68,7 +71,10 @@ function Demo() {
             <strong>Fuentes analizadas:</strong>
             {state.fuentes.map((fuente, index) => (
               <p key={index}>
-                - <a className="title" href={fuente.source}>{fuente.title}</a>
+                -{" "}
+                <a className="title" href={fuente.source}>
+                  {fuente.title}
+                </a>
               </p>
             ))}
           </div>

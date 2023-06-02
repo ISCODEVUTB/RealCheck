@@ -1,12 +1,15 @@
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
+from requests.exceptions import HTTPError
 import re
+
+x_parser = "html.parser"
 
 def extract_paragraphs(url):
     try:
         response = requests.get(url)
-        soup = BeautifulSoup(response.content, 'html.parser')
+        soup = BeautifulSoup(response.content, x_parser)
 
         paragraphs = []
         for paragraph in soup.find_all('p'):
@@ -27,7 +30,7 @@ def get_sources(texto_pp):
     query = ' '.join(texto_pp) + ", noticia actual"
     url = "http://172.190.53.35:8080/search"
     data = []
-    id = 0
+    _id = 0
     for pageno in range(1, 11):
         params = {
             "q": query,
@@ -36,8 +39,8 @@ def get_sources(texto_pp):
         }
         response = requests.get(url, params=params)
         if not response.ok:
-            raise Exception(f"Error al obtener fuentes, código HTTP: {response.status_code}")
-        soup = BeautifulSoup(response.text, 'html.parser')
+            raise HTTPError(f"Error al obtener fuentes, código HTTP: {response.status_code}")
+        soup = BeautifulSoup(response.text, x_parser)
         articles = soup.find_all('article', {'class': 'result'})
         for article in articles:
             title = article.find('h3').text
@@ -61,7 +64,7 @@ def get_sources(texto_pp):
                         # Realizar la solicitud de la página del artículo y obtener su contenido
                         article_response = requests.get(source)
                         article_content = article_response.content
-                        article_soup = BeautifulSoup(article_content, 'html.parser')
+                        article_soup = BeautifulSoup(article_content, x_parser)
                         texto_completo = ""
                         try:
                             texto_completo = article_soup.find('h1').text
@@ -69,12 +72,12 @@ def get_sources(texto_pp):
                                 continue
                             elif texto_completo.split()[0] != title_new.split()[0]:
                                 texto_completo = ""
-                        except:
+                        except Exception:
                             pass
                         if texto_completo:
-                            id += 1
+                            _id += 1
                             data.append({
-                                '_id': id,
+                                '_id': _id,
                                 'title': texto_completo.strip(),
                                 'source': source,
                                 'description': description.strip(),
@@ -90,26 +93,26 @@ def get_sources(texto_pp):
                                     #print("Nuevo texto: "+texto_completo)
                                     break
                             if texto_completo:
-                                id += 1
+                                _id += 1
                                 data.append({
-                                    '_id': id,
+                                    '_id': _id,
                                     'title': texto_completo.strip(),
                                     'source': source,
                                     'description': description.strip(),
                                 })                       
 
-                    except:
-                        id += 1
+                    except Exception:
+                        _id += 1
                         data.append({
-                            '_id': id,
+                            '_id': _id,
                             'title': title.strip(),
                             'source': source,
                             'description': description.strip(),
                         })
                 else:
-                    id += 1
+                    _id += 1
                     data.append({
-                        '_id': id,
+                        '_id': _id,
                         'title': title.strip(),
                         'source': source,
                         'description': description.strip(),

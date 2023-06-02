@@ -6,7 +6,6 @@ from selenium.webdriver.common.keys import Keys
 from argostranslate import package, translate
 import re
 
-#driver_path = r"C:\Users\USUARIO\Desktop\chromedriver.exe"
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_experimental_option("debuggerAddress", "localhost:9222")
 driver = webdriver.Chrome(options=chrome_options)
@@ -25,7 +24,7 @@ argos_en_es = get_argos_model('English', 'Spanish')
 argos_es_en = get_argos_model('Spanish', 'English')
 ventanas = driver.window_handles
 
-def Obtener_respuesta(texto):
+def obtener_respuesta(texto):
     driver.switch_to.window(ventanas[1])
     time.sleep(2)
     # Obtener la URL actual
@@ -53,7 +52,7 @@ def Obtener_respuesta(texto):
             #print("Mensaje:", last_message_content.text)
             return last_message_content.text
 
-def translate_text(text, src, target_lang):
+def translate_text(text, src):
     if src == "en":
         traducido = argos_en_es.translate(text)
         traducido = traducido.replace("\n\n","\n")
@@ -63,13 +62,10 @@ def translate_text(text, src, target_lang):
         return argos_es_en.translate(text)
 
 def verificar_llm(texto):
-    texto = translate_text(texto, "es", "en")
+    texto = translate_text(texto, "es")
     prompt = "Check the following news: '" + texto + "'. Your answer should be: Only answer any of these possible answers: 'True', 'False', 'Partially true', 'Not enough information'."
     print(prompt)
-    #print("prompt: ",prompt)
-    output = Obtener_respuesta(prompt)
-    #print("result =", result)
-    #print("output =", output)
+    output = obtener_respuesta(prompt)
     return separar_respuesta(output)
 
 def separar_respuesta(texto):
@@ -97,20 +93,20 @@ def separar_respuesta(texto):
         else:
             respuesta = "Sin información suficiente"
         
-        texto = translate_text(texto, "en", "es")
+        texto = translate_text(texto, "en")
         
         return respuesta, texto
     else:
         return None, texto.strip()
 
 
-def AnalizarConLLM(texto, fuente1, fuente2, ad_info):
+def analizar_con_llm(texto, fuente1, fuente2, ad_info):
     driver.switch_to.window(ventanas[0])
     time.sleep(2)
     print("URL: ", driver.current_url)
     # buscar <div class="flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]"><textarea id="prompt-textarea" tabindex="0" data-id="root" rows="1" placeholder="Send a message..." class="m-0 w-full resize-none border-0 bg-transparent p-0 pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-2 md:pl-0" style="max-height: 200px; height: 24px; overflow-y: hidden;"></textarea><button disabled="" class="absolute p-1 rounded-md text-gray-500 bottom-1.5 md:bottom-2.5 hover:bg-gray-100 enabled:dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2 disabled:opacity-40"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button></div> dar click
     input_box = driver.find_element(By.XPATH,'//*[@id="prompt-textarea"]')
-    entrada = f"Valida la siguiente noticia con la información que te voy a dar"
+    entrada = "Valida la siguiente noticia con la información que te voy a dar"
     time.sleep(1)
     input_box.send_keys(entrada)
     time.sleep(1)
@@ -134,23 +130,23 @@ def AnalizarConLLM(texto, fuente1, fuente2, ad_info):
     time.sleep(1)
     input_box.send_keys(entrada)
     input_box.send_keys(Keys.SHIFT + Keys.ENTER)
-    entrada = f"Tu respuesta debe ser en formato JSON y en un solo párrafo:"
+    entrada = "Tu respuesta debe ser en formato JSON y en un solo párrafo:"
     time.sleep(1)
     input_box.send_keys(entrada)
     time.sleep(1)
     input_box.send_keys(Keys.SHIFT + Keys.ENTER)
-    entrada = f"validacion: Verdadera, Falsa, Parcialmente verdadera, Sin información suficiente"
+    entrada = "validacion: Verdadera, Falsa, Parcialmente verdadera, Sin información suficiente"
     time.sleep(1)
     input_box.send_keys(entrada)
     time.sleep(1)
     input_box.send_keys(Keys.SHIFT + Keys.ENTER)
-    entrada = f"razon: Incluye una razón por la cuál la noticia obtuvo esa 'Validación'"
+    entrada = "razon: Incluye una razón por la cuál la noticia obtuvo esa 'Validación'"
     time.sleep(1)
     input_box.send_keys(entrada)
     time.sleep(1)
     input_box.send_keys(Keys.SHIFT + Keys.ENTER)
     input_box.send_keys(Keys.SHIFT + Keys.ENTER)
-    entrada = f"Nota: para que validación sea 'Sin información suficiente' es porque la noticia ingresada le faltan datos para poder comprarar con las fuentes, o porque las fuentes no tengan nada que ver con la noticia; si la noticia es afirmada pero dice textualmente que no ha sido comprobada o confirmada aún entonces queda es 'Parcialmente verdadera'"
+    entrada = "Nota: para que validación sea 'Sin información suficiente' es porque la noticia ingresada le faltan datos para poder comprarar con las fuentes, o porque las fuentes no tengan nada que ver con la noticia; si la noticia es afirmada pero dice textualmente que no ha sido comprobada o confirmada aún entonces queda es 'Parcialmente verdadera'"
     time.sleep(1)
     input_box.send_keys(entrada)
     time.sleep(1)
@@ -166,7 +162,7 @@ def AnalizarConLLM(texto, fuente1, fuente2, ad_info):
                 break
             else:
                 time.sleep(2)
-        except:
+        except Exception:
             time.sleep(2)
 
     try:
@@ -189,17 +185,17 @@ def AnalizarConLLM(texto, fuente1, fuente2, ad_info):
             return respuesta        
         else:
             print("No se encontraron respuestas.")
-    except:
+    except Exception:
         return "No se encontraron respuestas válidas"
 
 
-def Verificar(texto, fuente1, fuente2):
+def verificar(texto, fuente1, fuente2):
     ad_info = ""
     try:
         respuesta, ad_info = verificar_llm(texto)
         combined_text = respuesta + re.sub(r'\n+', ' ', ad_info)
-        return AnalizarConLLM(texto, fuente1, fuente2, combined_text)
-    except:
+        return analizar_con_llm(texto, fuente1, fuente2, combined_text)
+    except Exception:
         return None
     
     

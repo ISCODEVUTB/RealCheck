@@ -1,14 +1,14 @@
 from flask import Flask, request, jsonify
 import joblib
 import spacy
-from preprocesamiento import Tokenizar
-from validacion import Validar
+from preprocesamiento import tokenizar
+from validacion import validar
 from flask_cors import CORS
 from search_sources import get_sources, extract_paragraphs
 from match import similarity
 import numpy as np
 import requests
-#from check_llm import verificar_llm (PROXIMAMENTE; MEJORA)
+#from check_llm import verificar_llm (PROXIMAMENTE: MEJORA)
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -32,15 +32,14 @@ def predict_sentiment():
     # Restringir el uso del backend a solo nuestro frontend
     #if not request.referrer.startswith('http://172.190.53.35:3000'): 
     #    return jsonify({'error': 'Acceso denegado'})
-    result = Validar(clf, real_vectorizer, texto)
-    #print(result)
+    result = validar(clf, real_vectorizer, texto)
     return jsonify({'text': texto, 'verificabilidad': int(result[1]), 'probabilidad': result[2]})
 
 # Definir la ruta para el endpoint de buscar las fuentes
 @app.route('/search', methods=['POST'])
 def search_sources():
     texto = request.get_json()['texto']
-    texto_pp = Tokenizar(texto)
+    texto_pp = tokenizar(texto)
     # Restringir el uso del backend a solo nuestro frontend
     #if not request.referrer.startswith('http://172.190.53.35:3000'): 
     #    return jsonify({'error': 'Acceso denegado'})
@@ -50,11 +49,8 @@ def search_sources():
     
 @app.route('/check', methods=['POST'])
 def check_similarity():
-    #print("REQUEST_URL: ",request.url)
     texto = request.get_json()['texto']
     titulares = request.get_json()['titulares']
-    #print("Texto: ",texto)
-    #print("Titulares: ",titulares)
     # Restringir el uso del backend a solo nuestro frontend
     #if not request.referrer.startswith('http://172.190.53.35:3000'): 
     #    return jsonify({'error': 'Acceso denegado'})
@@ -66,40 +62,30 @@ def check_similarity():
 def news_checker():
     texto = request.get_json()['texto']
     fuentes = request.get_json()['fuentes_escogidas']
-    #print(texto)
-    #print("fuentes: ", fuentes)
     descrips = []
     for f in fuentes:
-        #print("f: ", f)
         descrips.append(extract_paragraphs(f["source"]))
     fuente1 = descrips[0]
     fuente2 = descrips[1]
-
-    #print("Texto: ",texto)
+    
     # Restringir el uso del backend a solo nuestro frontend
     #if not request.referrer.startswith('http://172.190.53.35:3000'): 
     #    return jsonify({'error': 'Acceso denegado'})
     # Proximamente: Mejora de algoritmo de verificación con LLM
-    #res , reason = verificar_llm(texto)
-    #return jsonify({'res': res, 'reason': reason})
-    
     try:
         # Validación con LLM
-        url = 'http://172.190.53.35:7000/analizar_llm'
+        url = 'http://172.174.160.126:7000/analizar_llm'
         data = {
             'texto': texto,
             'fuente1': fuente1,
             'fuente2': fuente2
         }
-
         response = requests.post(url, json=data)
         res = response.json()
         print(res)
         return jsonify({'res': res['validacion'], 'reason': res['razon'], 'fuentes': fuentes})
-    except:
+    except Exception:
         return jsonify({'res': 'No se puede validar con LLM en este momento', 'reason': 'No se pudo hacer la consulta desde el servidor, intente más tarde o contacte con un administrador', 'fuentes': fuentes})
-
-# Obtener la respuesta en formato JSON
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, use_reloader=True) 
