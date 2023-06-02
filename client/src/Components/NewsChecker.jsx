@@ -21,7 +21,7 @@ function NewsChecker() {
     setIsLoadingVer(true);
     event.preventDefault();
     try {
-      const response = await fetch("http://172.190.53.35:5000/verificar", {
+      const response = await fetch("http://172.174.160.126:5000/verificar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ texto: inputText }),
@@ -57,7 +57,7 @@ function NewsChecker() {
   const handleSearchClick = async (text) => {
     setIsLoading(true); // Establecer isLoading como true
     try {
-      const response = await fetch("http://172.190.53.35:5000/search", {
+      const response = await fetch("http://172.174.160.126:5000/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ texto: text }),

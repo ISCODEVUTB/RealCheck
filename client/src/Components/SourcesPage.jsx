@@ -32,7 +32,7 @@ function SourcesPage() {
           setIsLoading(true);
           console.log("Se hace petición: ", hasFetchedData);
           const response = await fetch(
-            "http://172.190.53.35:5000/check",
+            "http://172.174.160.126:5000/check",
             requestOptions
           );
           const data = await response.json();
@@ -58,7 +58,7 @@ function SourcesPage() {
     console.log("Fuentes escogidas: ", titularesSeleccionados);
 
     try {
-      const response = await fetch("http://172.190.53.35:5000/check_llm", {
+      const response = await fetch("http://172.174.160.126:5000/check_llm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
