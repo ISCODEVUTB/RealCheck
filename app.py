@@ -20,6 +20,8 @@ real_vectorizer = joblib.load('./utils/real_vectorizer.joblib')
 
 # Cargar el modelo de spaCy
 nlp = spacy.load('es_dep_news_trf')
+msg_den = "Acceso denegado"
+frontend = 'http://172.174.160.126:3000'
 
 @app.route('/')
 def welcome():
@@ -31,8 +33,8 @@ def predict_sentiment():
     # Obtener el texto de entrada de la solicitud POST
     texto = request.get_json()['texto']
     # Restringir el uso del backend a solo nuestro frontend
-    #if not request.referrer.startswith('http://172.190.53.35:3000'): 
-    #    return jsonify({'error': 'Acceso denegado'})
+    if not request.referrer.startswith(frontend): 
+        return jsonify({'error': msg_den})
     result = validar(clf, real_vectorizer, texto)
     return jsonify({'text': texto, 'verificabilidad': int(result[1]), 'probabilidad': result[2]})
 
@@ -42,8 +44,8 @@ def search_sources():
     texto = request.get_json()['texto']
     texto_pp = Tokenizar(texto)
     # Restringir el uso del backend a solo nuestro frontend
-    #if not request.referrer.startswith('http://172.190.53.35:3000'): 
-    #    return jsonify({'error': 'Acceso denegado'})
+    if not request.referrer.startswith(frontend): 
+        return jsonify({'error': msg_den})
     # Buscar las fuentes en searXNG
     result = get_sources(texto_pp)
     return jsonify({'preprocesado': texto_pp, 'sources': result})
@@ -53,8 +55,8 @@ def check_similarity():
     texto = request.get_json()['texto']
     titulares = request.get_json()['titulares']
     # Restringir el uso del backend a solo nuestro frontend
-    #if not request.referrer.startswith('http://172.190.53.35:3000'): 
-    #    return jsonify({'error': 'Acceso denegado'})
+    if not request.referrer.startswith(frontend): 
+        return jsonify({'error': msg_den})
     titulares_seleccionados, probabilidades = similarity(texto, titulares)
     probabilidades =  np.array(probabilidades, dtype=np.float32).tolist()
     return jsonify({'titulares_seleccionados': titulares_seleccionados, 'probabilidades': probabilidades})
@@ -70,8 +72,8 @@ def news_checker():
     fuente2 = descrips[1]
     
     # Restringir el uso del backend a solo nuestro frontend
-    #if not request.referrer.startswith('http://172.190.53.35:3000'): 
-    #    return jsonify({'error': 'Acceso denegado'})
+    if not request.referrer.startswith(frontend): 
+        return jsonify({'error': msg_den})
     # Proximamente: Mejora de algoritmo de verificación con LLM
     try:
         # Validación con LLM
