@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 import joblib
 import spacy
-from preprocesamiento import tokenizar
+from preprocesamiento import Tokenizar
 from validacion import validar
 from flask_cors import CORS
 from search_sources import get_sources, extract_paragraphs
@@ -40,7 +40,7 @@ def predict_sentiment():
 @app.route('/search', methods=['POST'])
 def search_sources():
     texto = request.get_json()['texto']
-    texto_pp = tokenizar(texto)
+    texto_pp = Tokenizar(texto)
     # Restringir el uso del backend a solo nuestro frontend
     #if not request.referrer.startswith('http://172.190.53.35:3000'): 
     #    return jsonify({'error': 'Acceso denegado'})
