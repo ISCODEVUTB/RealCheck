@@ -1,5 +1,6 @@
 from sklearn.metrics.pairwise import cosine_similarity
 import fasttext
+import math
 
 def similarity(text, titulares):
     # Cargar el modelo pre-entrenado de FastText en español
@@ -9,14 +10,19 @@ def similarity(text, titulares):
     frase_vec = modelo_ft.get_sentence_vector(text)
 
     titulares_prob = []
-    for titular in titulares:
+    for i, titular in enumerate(titulares):
         titular_vec = modelo_ft.get_sentence_vector(titular)
         prob = cosine_similarity(frase_vec.reshape(1, -1), titular_vec.reshape(1, -1))[0][0]
+
+        # Aplicar factor de decaimiento exponencial en función de la posición
+        decay_factor = math.exp(-0.1 * i)
+        prob *= decay_factor
+
         titulares_prob.append((titular, prob))
 
-    # Seleccionar los titulares con las diez probabilidades más altas
+    # Seleccionar los titulares con las 2 probabilidades más altas
     titulares_prob.sort(key=lambda x: x[1], reverse=True)
-    titulares_prob = titulares_prob[:10]
+    titulares_prob = titulares_prob[:2]
 
     # Guardar los titulares seleccionados y sus probabilidades en listas
     titulares_seleccionados = []
