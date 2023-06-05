@@ -16,7 +16,7 @@ def similarity(text, titulares):
 
     # Seleccionar los titulares con las 2 probabilidades más altas
     titulares_prob.sort(key=lambda x: x[1], reverse=True)
-    titulares_prob = titulares_prob[1:3]
+    titulares_prob = titulares_prob[:2]
 
     # Guardar los titulares seleccionados y sus probabilidades en listas
     titulares_seleccionados = []
