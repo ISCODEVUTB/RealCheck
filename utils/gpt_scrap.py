@@ -93,9 +93,9 @@ def separar_respuesta(texto):
             respuesta = "Sin información suficiente"
         
         texto = translate_text(texto, "en")
-        
-        return respuesta, texto
+        return respuesta, texto.strip()
     else:
+        texto = translate_text(texto, "en")
         return None, texto.strip()
 
 
@@ -192,7 +192,7 @@ def verificar(texto, fuente1, fuente2):
     ad_info = ""
     try:
         respuesta, ad_info = verificar_llm(texto)
-        combined_text = respuesta + re.sub(r'\n+', ' ', ad_info)
+        combined_text = str(respuesta) + re.sub(r'\n+', ' ', ad_info)
         return analizar_con_llm(texto, fuente1, fuente2, combined_text)
     except Exception:
         return None

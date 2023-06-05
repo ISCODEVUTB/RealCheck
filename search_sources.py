@@ -31,6 +31,8 @@ def get_sources(texto_pp):
     url = "http://172.174.160.126:8080/search"
     data = []
     _id = 0
+    saved_titles = []  # Lista auxiliar para almacenar los títulos guardados
+
     for pageno in range(1, 11):
         params = {
             "q": query,
@@ -48,9 +50,13 @@ def get_sources(texto_pp):
             description = article.find('p', {'class': 'content'}).text
             # Obtener el dominio de la fuente
             domain = urlparse(source).netloc.lstrip("www.")
-            #print(domain, "-> ", domain in fuentes_confiables)
+
+            # Verificar si el título ya se encuentra en saved_titles
+            if title in saved_titles:
+                continue
+
+            # Verificar si el dominio es una fuente confiable
             if domain in fuentes_confiables:
-                #print(title)
                 if "-" in title:
                     posicion = title.find("-")
                     title = title[:posicion]
@@ -60,7 +66,7 @@ def get_sources(texto_pp):
                 if "..." in title:
                     try:
                         posicion = title.find("...")
-                        title_new = title[:posicion] # Eliminar los tres puntos al final del título
+                        title_new = title[:posicion]  # Eliminar los tres puntos al final del título
                         # Realizar la solicitud de la página del artículo y obtener su contenido
                         article_response = requests.get(source)
                         article_content = article_response.content
@@ -82,15 +88,14 @@ def get_sources(texto_pp):
                                 'source': source,
                                 'description': description.strip(),
                             })
+                            saved_titles.append(title)  # Agregar el título a saved_titles
                         else:
                             # Buscar el texto de la página que comienza con el título del artículo
-                            # Corregir funcionamiento 
+                            # Corregir funcionamiento
                             for element in article_soup.find_all(text=True):
-                                #print(element, "-", title_new)
                                 if title_new.strip() in element.strip():
                                     # Si se encuentra el inicio del texto, se extrae el texto completo
                                     texto_completo = element.find_next_sibling(text=True)
-                                    #print("Nuevo texto: "+texto_completo)
                                     break
                             if texto_completo:
                                 _id += 1
@@ -99,7 +104,8 @@ def get_sources(texto_pp):
                                     'title': texto_completo.strip(),
                                     'source': source,
                                     'description': description.strip(),
-                                })                       
+                                })
+                                saved_titles.append(title)  # Agregar el título a saved_titles
 
                     except Exception:
                         _id += 1
@@ -109,6 +115,7 @@ def get_sources(texto_pp):
                             'source': source,
                             'description': description.strip(),
                         })
+                        saved_titles.append(title)  # Agregar el título a saved_titles
                 else:
                     _id += 1
                     data.append({
@@ -117,5 +124,6 @@ def get_sources(texto_pp):
                         'source': source,
                         'description': description.strip(),
                     })
+                    saved_titles.append(title)  # Agregar el título a saved_titles
 
     return data
